@@ -1,0 +1,302 @@
+/* General Body and Container */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.athlete-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fbc2eb 0%, #a18cd1 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* Header */
+.athlete-header {
+  width: 100%;
+  max-width: 1200px;
+  background: #fff;
+  border-radius: 2rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.athlete-header h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  background: linear-gradient(to right, #ff416c, #ff4b2b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-section span {
+  font-weight: 600;
+  color: #333;
+}
+
+.profile-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #ff4b2b;
+  padding: 5px;
+  background-color: white;
+}
+
+/* Menu Tabs */
+.menu-tabs {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: start;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.menu-tab {
+  flex: 1;
+  text-align: center;
+  padding: 0.8rem 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #ff4b2b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menu-tab:hover {
+  background-color: #ffe6e0;
+}
+
+.menu-tab.active {
+  background-color: #ff4b2b;
+  color: white;
+}
+
+/* Content Box */
+.content-box {
+  width: 100%;
+  max-width: 1000px;
+  background: #fff;
+  border-radius: 2rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  padding: 2rem;
+  text-align: center;
+  height:450px;
+}
+
+.upload-section {
+  border: 2px dashed #ff9a76;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  width : 80%;
+  margin:20px;
+}
+
+.upload-section:hover {
+  transform: scale(1.02);
+  border-color: #ff4b2b;
+}
+
+.upload-section span {
+  display: block;
+  margin-top: 1rem;
+  color: #555;
+}
+
+.preview-video {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+}
+
+.upload-button {
+  padding: 0.3rem 2rem;
+  background-color: #ff4b2b;
+  color: white;
+  font-weight: 600;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+  margin-right:30px;
+}
+
+.upload-button:hover {
+  background-color: #ff3a1a;
+}
+
+.message {
+  margin-top: 1rem;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Ensure video stays inside the main content box */
+.video-container {
+  width: 100%;
+  max-height: 300px; /* limit height */
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  margin: 0 auto; /* center horizontally */
+}
+
+.video-container video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 1rem;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 60px; /* below icon */
+  right: 0;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  width: 150px;
+  z-index: 50;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #ffe6e0;
+  color: #ff4b2b;
+}
+/* Scrollable section for forms */
+.scroll-section {
+  max-height: 100%;
+  overflow-y: auto;
+  padding-right: 1rem; /* so scrollbar doesn’t overlap content */
+}
+
+.scroll-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-section::-webkit-scrollbar-thumb {
+  background-color: #ff9a76;
+  border-radius: 10px;
+}
+
+.scroll-section::-webkit-scrollbar-thumb:hover {
+  background-color: #ff4b2b;
+}
+
+/* Style for form fields inside update section */
+.update-form input,
+.update-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+}
+
+.update-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.field-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+  text-align: left;
+}
+
+.update-form input,
+.update-form textarea {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+}
+
+.consent-checkbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.consent-custom {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid #c8c8c8;
+  background: #fff;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s ease;
+}
+.consent-checkbox-wrapper {
+  display: flex;              /* use flexbox */
+  justify-content: flex-start; /* push everything to the left */
+  align-items: center;        /* still keep vertical alignment tidy */
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  width: 100%;                /* ensures it spans full width so it aligns left */
+}
+
+
+.consent-custom::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0px;
+  width: 7px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.15s ease-in-out;
+}
+
+.consent-checkbox:checked + .consent-custom {
+  background-color: #16a34a; /* green */
+  border-color: #16a34a;
+}
+
+.consent-checkbox:checked + .consent-custom::after {
+  transform: rotate(45deg) scale(1);
+}
+
+.consent-text {
+  font-size: 0.95rem;
+  color: #333;
+}
