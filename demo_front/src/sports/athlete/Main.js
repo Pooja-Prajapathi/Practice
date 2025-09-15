@@ -4,7 +4,9 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "../../sports/Home.css";
 import Update from "./Update";
-import UploadVideo from "./UploadVideo"; // ✅ import new file
+import UploadVideo from "./UploadVideo";
+import Report from "../Report";
+import LeaderBoardTable from "../LeaderBoardTable";
 
 function Athlete() {
   const navigate = useNavigate();
@@ -55,9 +57,6 @@ function Athlete() {
             />
             {showProfileMenu && (
               <div className="profile-dropdown">
-                <div className="dropdown-item" onClick={handleLogout}>
-                  Logout
-                </div>
                 <div
                   className="dropdown-item"
                   onClick={() => alert("View Profile clicked")}
@@ -72,6 +71,9 @@ function Athlete() {
                   }}
                 >
                   Update Profile
+                </div>
+                <div className="dropdown-item" onClick={handleLogout}>
+                   Logout
                 </div>
               </div>
             )}
@@ -99,10 +101,9 @@ function Athlete() {
         animate={{ opacity: 1, y: 0 }}
       >
         {activeTab === "Upload" && <UploadVideo athleteId={athleteId} />}
-        {activeTab === "Update Athlete Info" && <Update />}
-        {activeTab !== "Upload" && activeTab !== "Update Athlete Info" && (
-          <p>{activeTab} section coming soon!</p>
-        )}
+        {activeTab === "Update Athlete Info" && <Update athleteId={athleteId} />}
+        {activeTab === "Report" && <Report athleteId={athleteId} />}
+        {activeTab === "Leaderboard" && <LeaderBoardTable />}
         {message && <div className="message mt-4">{message}</div>}
       </motion.div>
     </div>

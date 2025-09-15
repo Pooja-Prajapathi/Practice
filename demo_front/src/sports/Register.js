@@ -4,7 +4,7 @@ import { useLocation, Link } from "react-router-dom";
 function Register() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const type = params.get("type"); // "athlete" or "coach"
+  const type = params.get("type");
 
   const backendUrl = "http://localhost:8080/api/users";
 
@@ -47,14 +47,14 @@ function Register() {
       });
 
       if (res.ok) {
-        setMessage(`✅ Successfully registered as ${formType} in Sportzy.`);
+        setMessage(`Successfully registered as ${formType} in Sportzy.`);
       } else {
         const errorData = await res.json();
-        setMessage(`❌ Registration failed: ${errorData.message || "Unknown error"}`);
+        setMessage(`Registration failed: ${errorData.message || "Unknown error"}`);
       }
     } catch (err) {
       console.error(err);
-      setMessage("❌ Registration failed: Server error");
+      setMessage("Registration failed: Server error");
     }
   };
 

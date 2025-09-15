@@ -1,86 +1,83 @@
 import React, { useEffect, useState } from "react";
 
-function Update() {
-  const [athleteId, setAthleteId] = useState(null);
-  const [user, setUser] = useState(null);
+function Update({ athleteId }) {
   const [athleteData, setAthleteData] = useState({
     sportInterest: "",
     heightCm: 0,
     weightKg: 0,
     medicalHistory: "",
     parentalConsent: false,
-    badgePoints: 0,
   });
   const [message, setMessage] = useState("");
 
-  // Load user + athlete info
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-
-      fetch(`http://localhost:8080/api/athletes/byUser/${parsedUser.id}`)
+    if (athleteId) {
+      fetch(`http://localhost:8080/api/athletes/${athleteId}`)
         .then(async (res) => {
           if (res.ok) {
             const athlete = await res.json();
-            setAthleteId(athlete.id);
             setAthleteData({
               sportInterest: athlete.sportInterest || "",
               heightCm: athlete.heightCm || 0,
               weightKg: athlete.weightKg || 0,
               medicalHistory: athlete.medicalHistory || "",
               parentalConsent: athlete.parentalConsent || false,
-              badgePoints: athlete.badgePoints || 0
             });
           }
         })
         .catch(() => setMessage("🚨 Error fetching athlete profile."));
     }
-  }, []);
+  }, [athleteId]);
 
-  // Handle input
+  // Handle input change
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setAthleteData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  // Save athlete profile
+  // Save athlete profile (update only)
   const handleSave = async () => {
-    if (!user) {
-      setMessage("🚨 User not found.");
+    if (!athleteId) {
+      setMessage("🚨 No athleteId provided.");
       return;
     }
 
-    const payload = { ...athleteData, user: { id: user.id } };
-
     try {
-      const response = await fetch("http://localhost:8080/api/athletes", {
-        method: athleteId ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/athletes/${athleteId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(athleteData),
+        }
+      );
 
       if (response.ok) {
-        const savedAthlete = await response.json();
-        setAthleteId(savedAthlete.id);
-        setMessage("✅ Athlete profile saved successfully!");
+        await response.json();
+        setMessage("✅ Athlete profile updated successfully!");
+        setAthleteData({
+          sportInterest: "",
+          heightCm: 0,
+          weightKg: 0,
+          medicalHistory: "",
+          parentalConsent: false,
+        });
       } else {
         const errorText = await response.text();
         setMessage(`❌ Failed: ${errorText}`);
       }
     } catch (err) {
       console.error(err);
-      setMessage("🚨 Server error while saving athlete profile.");
+      setMessage("🚨 Server error while updating athlete profile.");
     }
   };
 
   return (
     <div className="scroll-section">
-      <h4>Update Athlete Information</h4>
+      <p className="field-heading">Update Athlete Information</p>
       <form className="update-form">
         <label className="field-label">Sport Interest</label>
         <input
@@ -129,18 +126,8 @@ function Update() {
           Parental Consent
         </label>
 
-        <label className="field-label">Badge Points</label>
-        <input
-          type="number"
-          name="badgePoints"
-          placeholder="Points earned"
-          value={athleteData.badgePoints}
-          onChange={handleChange}
-          disabled // usually managed by backend
-        />
-
         <button type="button" className="upload-button" onClick={handleSave}>
-          Save Athlete Info
+          Update Athlete Info
         </button>
       </form>
 

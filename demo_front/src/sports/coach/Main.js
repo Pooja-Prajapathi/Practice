@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Upload, User } from "lucide-react";
+import { User } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "../../sports/Home.css";
-import Update from "./Update"; // Import the new UpdateCoach component
+import Update from "./Update"; // Update Coach Info component
+import Video from "./Video";   // Video list component
+import Report from "../Report";
+import LeaderBoardTable from "../LeaderBoardTable";
 
 function Coach() {
   const navigate = useNavigate();
@@ -12,7 +15,7 @@ function Coach() {
   const [message, setMessage] = useState("");
   const [coachId, setCoachId] = useState(null);
   const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState("Upload");
+  const [activeTab, setActiveTab] = useState("Update Coach Info");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   // Load user and coach ID for uploads
@@ -35,7 +38,7 @@ function Coach() {
     }
   }, []);
 
-  // File upload
+  // Handle file selection
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -45,6 +48,7 @@ function Coach() {
     }
   };
 
+  // Handle video upload
   const handleUpload = async () => {
     if (!file) {
       setMessage("⚠️ Please select a video first.");
@@ -113,7 +117,7 @@ function Coach() {
                   Update Profile
                 </div>
                 <div className="dropdown-item" onClick={handleLogout}>
-                    Logout
+                  Logout
                 </div>
               </div>
             )}
@@ -141,64 +145,14 @@ function Coach() {
         animate={{ opacity: 1, y: 0 }}
       >
         {/* Update Coach Info */}
-        {activeTab === "Update Coach Info" && <Update />}
+        {activeTab === "Update Coach Info" && <Update coachId={coachId} />}
 
         {/* Upload Tab */}
-        {activeTab === "Upload" && (
-          <>
-            {!previewURL && (
-              <>
-                <p>Upload and preview training videos or resources</p>
-                <motion.label
-                  className="upload-section"
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <Upload className="mx-auto w-12 h-12 text-red-500" />
-                  <span>Click to choose a video file</span>
-                  <input
-                    type="file"
-                    accept="video/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                </motion.label>
-              </>
-            )}
-
-            {previewURL && (
-              <div className="review-section">
-                <h3 className="text-lg font-medium text-gray-700 mb-4">
-                  Review Video
-                </h3>
-                <div className="video-container">
-                  <video src={previewURL} controls className="preview-video" />
-                </div>
-                <div className="flex justify-center gap-4 mt-4">
-                  <button className="upload-button" onClick={handleUpload}>
-                    Upload Video
-                  </button>
-                  <button
-                    className="upload-button bg-gray-400 hover:bg-gray-500"
-                    onClick={() => {
-                      setFile(null);
-                      setPreviewURL("");
-                      setMessage("");
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {message && <div className="message mt-4">{message}</div>}
-          </>
-        )}
+        {activeTab === "Upload" && <Video coachId={coachId}/>}
 
         {/* Other Tabs */}
-        {activeTab !== "Upload" && activeTab !== "Update Coach Info" && (
-          <p>{activeTab} section coming soon!</p>
-        )}
+        {activeTab === "Report" && <Report coachId={coachId} />}
+        {activeTab === "Leaderboard" && <LeaderBoardTable />}
       </motion.div>
     </div>
   );

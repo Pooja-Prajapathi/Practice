@@ -19,11 +19,11 @@ function UploadVideo({ athleteId }) {
 
   const handleUpload = async () => {
     if (!file) {
-      setMessage("⚠️ Please select a video first.");
+      setMessage("Please select a video first.");
       return;
     }
     if (!athleteId) {
-      setMessage("🚨 Athlete ID not found. Please create your profile first.");
+      setMessage("Athlete ID not found. Please create your profile first.");
       return;
     }
 
@@ -32,30 +32,30 @@ function UploadVideo({ athleteId }) {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/athletes/${athleteId}/videos`,
+        `http://localhost:8080/api/videos/${athleteId}`,
         { method: "POST", body: formData }
       );
 
       if (response.ok) {
         await response.text();
-        setMessage("✅ Video uploaded successfully!");
+        setMessage("Video uploaded successfully!");
         setFile(null);
         setPreviewURL("");
       } else {
         const errorText = await response.text();
-        setMessage(`❌ Video upload failed: ${errorText}`);
+        setMessage(`Video upload failed: ${errorText}`);
       }
     } catch (err) {
       console.error(err);
-      setMessage("🚨 Server error while uploading video.");
+      setMessage("Server error while uploading video.");
     }
   };
 
   return (
-    <div>
+    <div className="scroll-section">
       {!previewURL && (
         <>
-          <p>Upload and preview your performance videos</p>
+          <p className="field-heading">Upload and preview your performance videos</p>
           <motion.label className="upload-section" whileHover={{ scale: 1.02 }}>
             <UploadIcon className="mx-auto w-12 h-12 text-red-500" />
             <span>Click to choose a video file</span>
@@ -71,9 +71,9 @@ function UploadVideo({ athleteId }) {
 
       {previewURL && (
         <div className="review-section">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">
+          <p className="field-heading">
             Review Video
-          </h3>
+          </p>
           <div className="video-container">
             <video src={previewURL} controls className="preview-video" />
           </div>

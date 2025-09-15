@@ -1,8 +1,9 @@
 /* General Body and Container */
-body, html {
+html, body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', sans-serif;
+  overflow-x: hidden; /* ✅ Prevent horizontal scrollbar */
 }
 
 .athlete-container {
@@ -12,6 +13,7 @@ body, html {
   flex-direction: column;
   align-items: center;
   padding: 2rem;
+  overflow-x: hidden; /* ✅ double check no horizontal scroll */
 }
 
 /* Header */
@@ -98,17 +100,22 @@ body, html {
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   padding: 2rem;
   text-align: center;
-  height:450px;
+  min-height: 450px; /* ✅ flexible instead of fixed */
+  height: auto;      /* ✅ grows with content */
 }
 
+/* Upload Section */
 .upload-section {
   border: 2px dashed #ff9a76;
   border-radius: 1.5rem;
   padding: 2rem;
   transition: transform 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
-  width : 80%;
-  margin:20px;
+  width: 80%;
+  height:300px;
+  margin: 20px;
+  padding:30px;
+  text-align:center;
 }
 
 .upload-section:hover {
@@ -138,7 +145,7 @@ body, html {
   cursor: pointer;
   transition: background-color 0.3s ease;
   border: none;
-  margin-right:30px;
+  margin-right: 30px;
 }
 
 .upload-button:hover {
@@ -154,7 +161,7 @@ body, html {
 /* Ensure video stays inside the main content box */
 .video-container {
   width: 100%;
-  max-height: 300px; /* limit height */
+  max-height: 400px; /* limit height */
   overflow: hidden;
   border-radius: 1rem;
   border: 1px solid #ddd;
@@ -169,6 +176,7 @@ body, html {
   border-radius: 1rem;
 }
 
+/* Profile Dropdown */
 .profile-dropdown {
   position: absolute;
   top: 60px; /* below icon */
@@ -191,11 +199,12 @@ body, html {
   background-color: #ffe6e0;
   color: #ff4b2b;
 }
+
 /* Scrollable section for forms */
 .scroll-section {
-  max-height: 100%;
+  height: 400px; /* ✅ keeps form scrollable if too long */
   overflow-y: auto;
-  padding-right: 1rem; /* so scrollbar doesn’t overlap content */
+  padding-right: 1rem;
 }
 
 .scroll-section::-webkit-scrollbar {
@@ -211,7 +220,7 @@ body, html {
   background-color: #ff4b2b;
 }
 
-/* Style for form fields inside update section */
+/* Form fields */
 .update-form input,
 .update-form textarea {
   width: 100%;
@@ -235,16 +244,16 @@ body, html {
   text-align: left;
 }
 
-.update-form input,
-.update-form textarea {
-  width: 100%;
-  padding: 0.6rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #ccc;
-  border-radius: 0.75rem;
-  font-size: 1rem;
+.field-heading {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  font-size:25px;
+  color: #333;
+  text-align: center;
 }
 
+/* Consent Checkbox */
 .consent-checkbox {
   position: absolute;
   opacity: 0;
@@ -261,18 +270,18 @@ body, html {
   position: relative;
   transition: all 0.2s ease;
 }
+
 .consent-checkbox-wrapper {
-  display: flex;              /* use flexbox */
-  justify-content: flex-start; /* push everything to the left */
-  align-items: center;        /* still keep vertical alignment tidy */
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
   gap: 0.5rem;
   cursor: pointer;
   user-select: none;
   margin-top: 8px;
   margin-bottom: 12px;
-  width: 100%;                /* ensures it spans full width so it aligns left */
+  width: 100%;
 }
-
 
 .consent-custom::after {
   content: "";
@@ -300,3 +309,40 @@ body, html {
   font-size: 0.95rem;
   color: #333;
 }
+
+.report-list {
+  display: flex;
+  flex-direction: column;
+  text-align:left;
+  gap: 16px;
+}
+
+.report-card {
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.leaderboard-table-container {
+  overflow-x: auto;
+  margin-top: 16px;
+  border: 1px solid #ccc;
+  border-radius:8px;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.leaderboard-table th {
+  background-color: #f4f4f4;
+}
+

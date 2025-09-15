@@ -61,17 +61,4 @@ public class AthleteController {
                 ResponseEntity.noContent().build() :
                 ResponseEntity.notFound().build();
     }
-
-    @PostMapping("/{athleteId}/videos")
-    public ResponseEntity<String> uploadVideo(@PathVariable String athleteId,
-                                              @RequestParam("file") MultipartFile file) throws IOException {
-        String videoId = athleteService.uploadVideo(athleteId, file);
-        return ResponseEntity.ok(videoId);
-    }
-
-    // ✅ Get all video IDs of an athlete
-    @GetMapping("/{athleteId}/videos")
-    public ResponseEntity<List<String>> getVideos(@PathVariable String athleteId) {
-        return ResponseEntity.ok(athleteService.getVideos(athleteId));
-    }
 }

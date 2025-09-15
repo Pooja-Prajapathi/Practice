@@ -34,9 +34,4 @@ public class Athlete {
     private String medicalHistory;
 
     private Boolean parentalConsent = false;
-
-    private Integer badgePoints = 0;
-
-    @Builder.Default
-    private List<String> videoIds = new ArrayList<>();
 }

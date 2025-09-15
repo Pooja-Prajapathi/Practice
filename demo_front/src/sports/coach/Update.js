@@ -1,43 +1,38 @@
 import React, { useEffect, useState } from "react";
 
-function Update() {
-  const [coachId, setCoachId] = useState(null);
-  const [user, setUser] = useState(null);
+function Update({ coachId }) {
   const [coachData, setCoachData] = useState({
     specialization: "",
     certification: "",
     experienceYears: 0,
     region: "",
-    bio: ""
+    bio: "",
   });
   const [message, setMessage] = useState("");
 
-  // Load user + coach info
+  // Load coach info by coachId
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-
-      fetch(`http://localhost:8080/api/coaches/byUser/${parsedUser.id}`)
+    if (coachId) {
+      fetch(`http://localhost:8080/api/coaches/${coachId}`)
         .then(async (res) => {
           if (res.ok) {
             const coach = await res.json();
-            setCoachId(coach.id);
             setCoachData({
               specialization: coach.specialization || "",
               certification: coach.certification || "",
               experienceYears: coach.experienceYears || 0,
               region: coach.region || "",
-              bio: coach.bio || ""
+              bio: coach.bio || "",
             });
+          } else {
+            setMessage("🚨 Coach profile not found. Please create one.");
           }
         })
         .catch(() => setMessage("🚨 Error fetching coach profile."));
     }
-  }, []);
+  }, [coachId]);
 
-  // Handle input
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCoachData((prev) => ({ ...prev, [name]: value }));
@@ -45,24 +40,24 @@ function Update() {
 
   // Save coach profile
   const handleSave = async () => {
-    if (!user) {
-      setMessage("🚨 User not found.");
+    if (!coachId) {
+      setMessage("🚨 No coachId provided.");
       return;
     }
 
-    const payload = { ...coachData, user: { id: user.id } };
-
     try {
-      const response = await fetch("http://localhost:8080/api/coaches", {
-        method: coachId ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/coaches/${coachId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(coachData),
+        }
+      );
 
       if (response.ok) {
-        const savedCoach = await response.json();
-        setCoachId(savedCoach.id);
-        setMessage("✅ Coach profile saved successfully!");
+        await response.json();
+        setMessage("✅ Coach profile updated successfully!");
       } else {
         const errorText = await response.text();
         setMessage(`❌ Failed: ${errorText}`);
@@ -75,7 +70,7 @@ function Update() {
 
   return (
     <div className="scroll-section">
-    <h4> Update Coach Information</h4>
+      <h4>Update Coach Information</h4>
       <form className="update-form">
         <label className="field-label">Specialization</label>
         <input
@@ -121,11 +116,7 @@ function Update() {
           onChange={handleChange}
         />
 
-        <button
-          type="button"
-          className="upload-button"
-          onClick={handleSave}
-        >
+        <button type="button" className="upload-button" onClick={handleSave}>
           Save Coach Info
         </button>
       </form>

@@ -17,7 +17,6 @@ public class CoachController {
 
     private final CoachService coachService;
 
-    // ✅ Create coach by linking to existing User via userId
     @PostMapping("/{userId}")
     public ResponseEntity<Coach> createCoach(@PathVariable String userId,
                                              @Valid @RequestBody Coach coachData) {
@@ -31,7 +30,6 @@ public class CoachController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ Get all coaches
     @GetMapping
     public ResponseEntity<List<Coach>> getAllCoaches() {
         return ResponseEntity.ok(coachService.getAllCoaches());

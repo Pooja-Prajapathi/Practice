@@ -42,10 +42,9 @@ public class User {
     private String contact;
 
     @NotBlank(message = "Role is required")
-    @Pattern(regexp = "athlete|coach|admin", flags = Pattern.Flag.CASE_INSENSITIVE,
+    @Pattern(regexp = "athlete|coach", flags = Pattern.Flag.CASE_INSENSITIVE,
             message = "Role must be athlete, coach, or admin")
     private String role;
 
     private String createdAt;
-    private String updatedOn;
 }

@@ -20,11 +20,11 @@ function Login() {
       if (res.ok) {
         const user = await res.json();
         localStorage.setItem("user", JSON.stringify(user));
-        setMessage(`✅ Welcome ${user.fullname}! Setting up your account...`);
+        setMessage(`Welcome ${user.fullname}! Setting up your account...`);
 
         // Call role-specific API after login
         if (user.role === "athlete") {
-          await createAthlete(user.id); // ✅ pass only userId
+          await createAthlete(user.id);
           setTimeout(() => navigate("/athlete"), 1000);
         } else if (user.role === "coach") {
           await createCoach(user.id);
@@ -35,16 +35,15 @@ function Login() {
       } else {
         const errorData = await res.json();
         setMessage(
-          `❌ Login failed: ${errorData.message || "Invalid credentials"}`
+          `Login failed: ${errorData.message || "Invalid credentials"}`
         );
       }
     } catch (err) {
       console.error(err);
-      setMessage("❌ Login failed: Server error");
+      setMessage("Login failed: Server error");
     }
   };
 
-  // ✅ Create athlete profile (backend expects userId as path variable)
   const createAthlete = async (userId) => {
     try {
       const res = await fetch(`http://localhost:8080/api/athletes/${userId}`, {
@@ -60,18 +59,17 @@ function Login() {
       });
 
       if (res.ok) {
-            console.log("✅ Athlete profile created");
+            console.log("Athlete profile created");
           } else if (res.status === 409) {
-            console.log("ℹ️ Athlete already exists, skipping creation");
+            console.log("Athlete already exists, skipping creation");
           } else {
-            console.error("❌ Failed to create athlete profile");
+            console.error("Failed to create athlete profile");
           }
         } catch (err) {
           console.error("Error creating athlete profile", err);
         }
   };
 
-  // ✅ Create coach profile (adjust API same way as athlete)
   const createCoach = async (userId) => {
     try {
       const res = await fetch(`http://localhost:8080/api/coaches/${userId}`, {
