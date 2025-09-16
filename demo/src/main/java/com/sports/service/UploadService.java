@@ -1,9 +1,6 @@
 package com.sports.service;
 
-import com.sports.entity.Athlete;
-import com.sports.entity.Coach;
-import com.sports.entity.Result;
-import com.sports.entity.Upload;
+import com.sports.entity.*;
 import com.sports.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -116,21 +114,24 @@ public class UploadService {
         }
     }
 
-
     // Update getVideos() to return full URLs
-    public List<String> getVideos(String coachId) {
+    public List<VideoDTO> getVideos(String coachId) {
         Coach coach = coachRepository.findById(coachId)
-                .orElseThrow(() -> new RuntimeException("Coach not found with id: " + coachId));
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
 
-        // Get all results linked to this coach
         List<Result> results = resultRepository.findByCoach(coach);
 
-        // Map results → their linked video
-        return results.stream()
-                .map(Result::getVideo)  // each Result has a linked Upload
-                .filter(Objects::nonNull)
-                .map(upload -> "http://localhost:8080/api/videos/view/" + upload.getVideoId())
-                .toList();
-    }
+        return results.stream().map(result -> {
+            Upload upload = result.getVideo();
+            Athlete athlete = result.getAthlete();
 
+            return new VideoDTO(
+                    upload.getId(),
+                    upload.getFileName(),
+                    "http://localhost:8080/api/videos/view/" + upload.getVideoId(),
+                    upload.getUploadedAt(),
+                    athlete != null && athlete.getUser() != null ? athlete.getUser().getFullname() : "Unknown Athlete"
+            );
+        }).collect(Collectors.toList());
+    }
 }

@@ -23,6 +23,7 @@ function LeaderBoardTable() {
 
   return (
     <div className="leaderboard-table-container scroll-section">
+    <p className="field-heading">LeaderBoard </p>
       <table className="leaderboard-table">
         <thead>
           <tr>

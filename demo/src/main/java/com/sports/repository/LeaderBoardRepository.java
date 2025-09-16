@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface LeaderBoardRepository extends MongoRepository<LeaderBoard, String> {
 
+    Optional<LeaderBoard> findByAthleteId(String athleteId);
+
     Optional<LeaderBoard> findByAthlete(Athlete athlete);
 
     List<LeaderBoard> findBySportOrderByPointsDesc(String sport);

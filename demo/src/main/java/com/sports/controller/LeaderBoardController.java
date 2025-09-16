@@ -24,7 +24,8 @@ public class LeaderBoardController {
     // READ all
     @GetMapping
     public ResponseEntity<List<LeaderBoard>> getAllLeaderBoards() {
-        return ResponseEntity.ok(leaderBoardService.getAllLeaderBoards());
+        List<LeaderBoard> updatedList = leaderBoardService.updateAllLeaderBoards();
+        return ResponseEntity.ok(updatedList);
     }
 
     // READ by ID

@@ -102,7 +102,7 @@ function Athlete() {
       >
         {activeTab === "Upload" && <UploadVideo athleteId={athleteId} />}
         {activeTab === "Update Athlete Info" && <Update athleteId={athleteId} />}
-        {activeTab === "Report" && <Report athleteId={athleteId} />}
+        {activeTab === "Report" && <Report/>}
         {activeTab === "Leaderboard" && <LeaderBoardTable />}
         {message && <div className="message mt-4">{message}</div>}
       </motion.div>

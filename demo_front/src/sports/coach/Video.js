@@ -22,42 +22,57 @@ function Video({ coachId }) {
   }, [coachId]);
 
   if (message) return <p>{message}</p>;
-  if (videos.length === 0) return <p>No videos available for your athletes.</p>;
+  if (videos.length === 0) return <p>No videos available.</p>;
 
   return (
-    <div className="videos-grid" style={{ display: "grid", gap: "20px" }}>
-      {videos.map((video, index) => (
-        <div
-          key={index}
-          className="video-card"
-          style={{
-            border: "1px solid #ccc",
-            padding: "10px",
-            borderRadius: "8px",
-          }}
-        >
-          {/* If backend returns only URLs */}
-          {typeof video === "string" ? (
-            <video
-              src={video}
-              controls
-              className="preview-video"
-              style={{ width: "100%", borderRadius: "6px" }}
-            />
-          ) : (
-            <>
-              <h4>{video.fileName}</h4>
-              <p>Uploaded: {video.uploadedAt}</p>
+    <div className="scroll-section">
+      {/* 🔹 Page Heading */}
+      <p className="field-heading">Video Review</p>
+
+      <div className="videos-grid" style={{ display: "grid", gap: "20px" }}>
+        {videos.map((video, index) => (
+          <div
+            key={index}
+            className="video-card"
+            style={{
+              border: "1px solid #ccc",
+              padding: "15px",
+              borderRadius: "8px",
+              background: "#f9f9f9",
+            }}
+          >
+            {/* 🔹 Show video name */}
+            <p className="field-heading ">
+                          {video.fileName || `Video ${index + 1}`}
+                        </p>
+                        <p className="field-label">
+                          Athlete: {video.athleteName || "Unknown"} &nbsp; | &nbsp;
+                          <span >
+                            Uploaded: {video.uploadedAt}
+                          </span>
+                        </p>
+
+            {/* 🔹 Video Player */}
+            {typeof video === "string" ? (
               <video
-                src={video.url}
+                src={video}
                 controls
                 className="preview-video"
                 style={{ width: "100%", borderRadius: "6px" }}
               />
-            </>
-          )}
-        </div>
-      ))}
+            ) : (
+              <>
+                <video
+                  src={video.url}
+                  controls
+                  className="preview-video"
+                  style={{ width: "100%", borderRadius: "6px" }}
+                />
+              </>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

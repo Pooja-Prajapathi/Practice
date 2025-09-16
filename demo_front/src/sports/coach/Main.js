@@ -48,41 +48,6 @@ function Coach() {
     }
   };
 
-  // Handle video upload
-  const handleUpload = async () => {
-    if (!file) {
-      setMessage("⚠️ Please select a video first.");
-      return;
-    }
-    if (!coachId) {
-      setMessage("🚨 Coach ID not found. Please update your profile first.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/coaches/${coachId}/videos`,
-        { method: "POST", body: formData }
-      );
-
-      if (response.ok) {
-        await response.text();
-        setMessage("✅ Video uploaded successfully!");
-        setFile(null);
-        setPreviewURL("");
-      } else {
-        const errorText = await response.text();
-        setMessage(`❌ Video upload failed: ${errorText}`);
-      }
-    } catch (err) {
-      console.error(err);
-      setMessage("🚨 Server error while uploading video.");
-    }
-  };
-
   const tabs = ["Update Coach Info", "Upload", "Reports", "Leaderboard"];
 
   const handleLogout = () => {
@@ -151,7 +116,7 @@ function Coach() {
         {activeTab === "Upload" && <Video coachId={coachId}/>}
 
         {/* Other Tabs */}
-        {activeTab === "Report" && <Report coachId={coachId} />}
+        {activeTab === "Reports" && <Report/>}
         {activeTab === "Leaderboard" && <LeaderBoardTable />}
       </motion.div>
     </div>

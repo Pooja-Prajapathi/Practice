@@ -36,14 +36,13 @@ public class ResultController {
 
     @GetMapping("/athlete/{id}")
     public List<ResultDTO> getResultByAthleteId(@PathVariable String id) {
-        return resultService.getResultsByAthleteId(id);
+        return resultService.getResultsByAthlete(id);
     }
 
-
-//    @GetMapping("/coach/{id}")
-//    public List<Result> getResultByCoachId(@PathVariable String id) {
-//        return resultService.getResultsByCoachId(id);
-//    }
+    @GetMapping("/coach/{id}")
+    public List<ResultDTO> getResultByCoachId(@PathVariable String id) {
+        return resultService.getResultsByCoach(id);
+    }
 
     // UPDATE
     @PutMapping("/{id}")

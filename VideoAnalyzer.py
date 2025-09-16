@@ -3,8 +3,10 @@ import cv2
 import json
 import mediapipe as mp
 import math
+import random
 
 mp_pose = mp.solutions.pose
+
 
 def calculate_angle(a, b, c):
     """
@@ -19,16 +21,35 @@ def calculate_angle(a, b, c):
         ang = 360 - ang
     return ang
 
+
+def detect_sport_with_pose(elbow_angle, knee_angle, left_shoulder, left_wrist, left_hip):
+    """
+    Very basic heuristic sport suggestion using pose data only.
+    (In real scenarios, you'd combine this with object detection.)
+    """
+    detected_sport = "Unknown"
+
+    # Cricket batting stance (elbow bent + knees relatively straight)
+    if 60 <= elbow_angle <= 120 and knee_angle > 140:
+        detected_sport = "Cricket"
+
+    # Hockey stance (knees bent, upper body leaning forward)
+    elif 100 <= knee_angle <= 140 and elbow_angle < 100:
+        detected_sport = "Hockey"
+
+    # Badminton (overhead reach, straight arm)
+    elif elbow_angle > 150 and abs(left_wrist[1] - left_shoulder[1]) < 0.2:
+        detected_sport = "Badminton"
+
+    return detected_sport
+
+
 def analyze_video_with_mediapipe(video_path, athlete_id):
-    analysis_results = {
-        "athlete_id": athlete_id,
-        "total_frames": 0,
-        "evaluated_frames": 0,
-        "good_form_frames": 0,
-        "average_score": 0.0,
-        "key_moments": [],
-        "suggestions": []
-    }
+    # Internal tracking
+    total_frames = 0
+    evaluated_frames = 0
+    good_form_frames = 0
+    detected_sport = "Unknown"
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         cap = cv2.VideoCapture(video_path)
@@ -41,7 +62,7 @@ def analyze_video_with_mediapipe(video_path, athlete_id):
             if not ret:
                 break
 
-            analysis_results["total_frames"] += 1
+            total_frames += 1
             image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = pose.process(image)
 
@@ -67,41 +88,63 @@ def analyze_video_with_mediapipe(video_path, athlete_id):
                 elbow_angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
                 knee_angle = calculate_angle(left_hip, left_knee, left_ankle)
 
-                analysis_results["evaluated_frames"] += 1
+                evaluated_frames += 1
 
-                # Define simple "good form" conditions (example)
-                good_form = False
-                if 70 <= elbow_angle <= 110:  # Example range for push-up position
-                    good_form = True
-                if 80 <= knee_angle <= 100:  # Example range for squat depth
-                    good_form = True
+                # Detect sport
+                sport_guess = detect_sport_with_pose(
+                    elbow_angle, knee_angle, left_shoulder, left_wrist, left_hip
+                )
+                if detected_sport == "Unknown" and sport_guess != "Unknown":
+                    detected_sport = sport_guess
 
-                if good_form:
-                    analysis_results["good_form_frames"] += 1
-                    if analysis_results["evaluated_frames"] % 50 == 0:
-                        analysis_results["key_moments"].append({
-                            "frame": analysis_results["total_frames"],
-                            "description": f"Good form detected (Elbow={elbow_angle:.1f}, Knee={knee_angle:.1f})"
-                        })
+                # Check good form
+                if 70 <= elbow_angle <= 110 or 80 <= knee_angle <= 100:
+                    good_form_frames += 1
 
         cap.release()
 
-    # Final score = % of frames with good form
-    if analysis_results["evaluated_frames"] > 0:
-        ratio = analysis_results["good_form_frames"] / analysis_results["evaluated_frames"]
-        analysis_results["average_score"] = ratio * 100
-
-        if ratio < 0.4:
-            analysis_results["suggestions"].append("Form consistency is low. Focus on stability and alignment.")
-        elif ratio < 0.7:
-            analysis_results["suggestions"].append("Decent form, but can improve consistency.")
-        else:
-            analysis_results["suggestions"].append("Great form! Keep practicing with intensity.")
-
+    # Compute performance metrics
+    if evaluated_frames > 0:
+        form_ratio = good_form_frames / evaluated_frames
+        percentile = round(form_ratio * 100, 2)  # [0-100]
     else:
-        analysis_results["suggestions"].append("No pose landmarks detected in the video.")
+        form_ratio = 0
+        percentile = 0.0
 
-    return analysis_results
+    # Injury risk estimation
+    if form_ratio < 0.3:
+        injury_risk = "high"
+    elif form_ratio < 0.6:
+        injury_risk = "medium"
+    else:
+        injury_risk = "low"
+
+    # Recommendations
+    if form_ratio < 0.4:
+        recommendations = "Focus on basic posture and controlled movements."
+        comments = "Form consistency is low. Training adjustments recommended."
+    elif form_ratio < 0.7:
+        recommendations = "Good effort, but aim for more stability."
+        comments = "Moderate consistency. Keep improving alignment."
+    else:
+        recommendations = "Excellent form, maintain intensity."
+        comments = "Great performance with consistent form."
+
+    # Badges: scale performance to [0-10]
+    badges = min(10, max(0, round(form_ratio * 10)))
+
+    # Final JSON response mapped to Java entity fields
+    result = {
+        "percentile": percentile,
+        "injuryRisk": injury_risk,
+        "recommendations": recommendations,
+        "comments": comments,
+        "detected_sports": detected_sport,
+        "badges": badges
+    }
+
+    return result
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:

@@ -1,5 +1,6 @@
 package com.sports.controller;
 
+import com.sports.entity.VideoDTO;
 import com.sports.service.UploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -26,17 +27,24 @@ public class UploadController {
     }
 
     @GetMapping("/{coachId}")
-    public ResponseEntity<?> getVideos(@PathVariable String coachId) {
-        return ResponseEntity.ok(uploadService.getVideos(coachId));
+    public ResponseEntity<List<VideoDTO>> getVideos(@PathVariable String coachId) {
+        List<VideoDTO> videos = uploadService.getVideos(coachId);
+        return ResponseEntity.ok(videos);
     }
 
     @GetMapping("/view/{videoId}")
     public ResponseEntity<Resource> viewVideo(@PathVariable String videoId) {
         Resource resource = uploadService.loadVideoAsResource(videoId);
-
+        if (resource == null || !resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+        String contentType = "application/octet-stream";
+        try {
+            contentType = java.nio.file.Files.probeContentType(resource.getFile().toPath());
+        } catch (IOException ex) {
+        }
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_TYPE, "video/mp4") // could also read from GridFS metadata
+                .header(HttpHeaders.CONTENT_TYPE, contentType != null ? contentType : "video/mp4")
                 .body(resource);
     }
-
 }

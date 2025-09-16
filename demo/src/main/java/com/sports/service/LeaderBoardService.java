@@ -33,6 +33,25 @@ public class LeaderBoardService {
         return leaderBoardRepository.findById(id);
     }
 
+    public List<LeaderBoard> updateAllLeaderBoards() {
+        List<LeaderBoard> allBoards = leaderBoardRepository.findAll();
+
+        for (LeaderBoard lb : allBoards) {
+            // Recalculate points
+            lb.setPoints(calculatePoints(lb.getAthlete(), lb.getSport()));
+        }
+
+        leaderBoardRepository.saveAll(allBoards);
+
+        // Recalculate ranks per sport and region
+        allBoards.stream()
+                .map(lb -> lb.getSport())
+                .distinct()
+                .forEach(sport -> recalculateRank(sport, null));
+
+        return leaderBoardRepository.findAll(); // return the updated list
+    }
+
     public LeaderBoard updateLeaderBoard(String id, LeaderBoard updatedLb) {
         return leaderBoardRepository.findById(id)
                 .map(existing -> {

@@ -3,13 +3,9 @@ package com.sports.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sports.entity.*;
-import com.sports.repository.AthleteRepository;
-import com.sports.repository.LeaderBoardRepository;
-import com.sports.repository.ResultRepository;
-import com.sports.repository.UploadRepository;
+import com.sports.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -26,6 +22,8 @@ public class ResultService {
     private final LeaderBoardRepository leaderBoardRepository;
     private final UploadRepository uploadRepository;
     private final AthleteRepository athleteRepository;
+    private final CoachRepository coachRepository;
+    private final UserRepository userRepository;
 
     // CREATE
     public Result saveResult(Result result) {
@@ -44,8 +42,9 @@ public class ResultService {
         return resultRepository.findById(id);
     }
 
-    public List<ResultDTO> getResultsByAthleteId(String athleteId) {
-        Optional<Athlete> athlete = athleteRepository.findById(athleteId);
+    public List<ResultDTO> getResultsByAthlete(String userId) {
+        User user=userRepository.findById(userId).orElseThrow(()->new RuntimeException("User Doesn't exists"));
+        Optional<Athlete> athlete = athleteRepository.findByUser(user);
 
         return resultRepository.findByAthleteId(athlete)
                 .stream()
@@ -65,11 +64,30 @@ public class ResultService {
                 .collect(Collectors.toList());
     }
 
-//    public List<Result> getResultsByCoachId(String coachId) {
-//        Coach coach = new Coach();
-//        coach.setId(coachId);
-//        return resultRepository.findByVideoCoach(coach);
-//    }
+    public List<ResultDTO> getResultsByCoach(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User Doesn't exist"));
+
+        Coach coach = coachRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Coach not found for this user"));
+
+        return resultRepository.findByCoach(coach)
+                .stream()
+                .map(result -> ResultDTO.builder()
+                        .id(result.getId())
+                        .athleteName(result.getAthlete() != null ? result.getAthlete().getUser().getFullname() : null)
+                        .coachName(result.getCoach() != null ? result.getCoach().getUser().getFullname() : null)
+                        .videoFileName(result.getVideo() != null ? result.getVideo().getFileName() : null)
+                        .percentile(result.getPercentile())
+                        .injuryRisk(result.getInjuryRisk())
+                        .recommendations(result.getRecommendations())
+                        .comments(result.getComments())
+                        .createdAt(result.getCreatedAt())
+                        .badges(result.getBadges())
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
 
     // READ (by video)
     public List<Result> getResultsByVideo(Upload upload) {
@@ -80,9 +98,6 @@ public class ResultService {
     public Result updateResult(String id, Result updatedResult) {
         return resultRepository.findById(id)
                 .map(existing -> {
-                    existing.setPercentile(updatedResult.getPercentile());
-                    existing.setInjuryRisk(updatedResult.getInjuryRisk());
-                    existing.setRecommendations(updatedResult.getRecommendations());
                     existing.setComments(updatedResult.getComments());
                     existing.setBadges(updatedResult.getBadges());
                     return resultRepository.save(existing);
@@ -102,55 +117,83 @@ public class ResultService {
             if (jsonStart > 0) {
                 reportJson = reportJson.substring(jsonStart);
             }
-            JsonNode json = objectMapper.readTree(reportJson);
-            System.out.println("*****************************"+json);
-            Float score = (float) json.path("average_score").asDouble(0.0);
-            // Collect recommendations
-            StringBuilder recommendationsBuilder = new StringBuilder();
-            if (json.has("suggestions") && json.get("suggestions").isArray()) {
-                for (JsonNode suggestion : json.get("suggestions")) {
-                    recommendationsBuilder.append(suggestion.asText()).append("\n");
-                }
-            }
-            String recommendations = recommendationsBuilder.toString().trim();
 
-            // Collect key moments
-            StringBuilder keyMomentsBuilder = new StringBuilder();
-            if (json.has("key_moments") && json.get("key_moments").isArray()) {
-                for (JsonNode moment : json.get("key_moments")) {
-                    keyMomentsBuilder
-                            .append("Frame ")
-                            .append(moment.path("frame").asInt())
-                            .append(": ")
-                            .append(moment.path("description").asText())
-                            .append("\n");
+            JsonNode json = objectMapper.readTree(reportJson);
+
+            // ✅ Use "percentile" instead of "average_score"
+            Float score = (float) json.path("percentile").asDouble(0.0);
+
+            // ✅ Use "recommendations" directly (string now)
+            String recommendations = json.path("recommendations").asText("");
+
+            // ✅ Use "comments" directly (string now)
+            String comments = json.path("comments").asText("");
+
+            // ✅ Use "detected_sports" (string now)
+            String detectedSports = json.path("detected_sports").asText("");
+
+            // Coach selection logic
+            List<Coach> coachList = coachRepository.findAll();
+            Coach coach = null;
+            String sport = upload.getAthlete().getSportInterest();
+            for (Coach c : coachList) {
+                if (!detectedSports.isEmpty() && c.getSpecialization().contains(detectedSports)) {
+                    coach = c;
+                    break;
+                } else if (c.getSpecialization().contains(sport)) {
+                    coach = c;
                 }
             }
-            String keyMoments = keyMomentsBuilder.toString().trim();
+
+            // ✅ Injury risk already computed in Python, but if you want override:
+            String injuryRisk = json.path("injuryRisk").asText("low");
+
+            // ✅ Badges
+            int badges = json.path("badges").asInt(0);
+
             Result result = Result.builder()
                     .athlete(upload.getAthlete())
+                    .coach(coach)
                     .video(upload)
                     .percentile(score)
-                    .injuryRisk(score>50?"high":"low")
+                    .injuryRisk(injuryRisk)
                     .recommendations(recommendations)
-                    .comments(keyMoments)
-                    .badges(0)
+                    .comments(comments)
+                    .badges(badges)
                     .build();
+
             String today = LocalDate.now().format(formatter);
             result.setCreatedAt(today);
+
             resultRepository.save(result);
-            createLeader(upload.getAthlete());
+            createLeader(upload.getAthlete(), coach);
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse and save report JSON", e);
         }
     }
 
-    public void createLeader(Athlete athlete){
-        LeaderBoard leaderBoard=LeaderBoard.builder()
-                .athlete(athlete)
-                .region(athlete.getUser().getLocation())
-                .sport(athlete.getSportInterest())
-                .build();
-        leaderBoardRepository.save(leaderBoard);
+    public void createLeader(Athlete athlete, Coach coach) {
+        // Check if a leaderboard entry already exists for this athlete
+        Optional<LeaderBoard> existing = leaderBoardRepository.findByAthleteId(athlete.getId());
+
+        if (existing.isPresent()) {
+            // Optionally, update coach or other fields if needed
+            LeaderBoard lb = existing.get();
+            lb.setCoach(coach);
+            lb.setRegion(athlete.getUser().getLocation());
+            lb.setSport(athlete.getSportInterest());
+            leaderBoardRepository.save(lb); // update existing entry
+        } else {
+            // Create a new leaderboard entry
+            LeaderBoard leaderBoard = LeaderBoard.builder()
+                    .athlete(athlete)
+                    .coach(coach)
+                    .region(athlete.getUser().getLocation())
+                    .sport(athlete.getSportInterest())
+                    .build();
+            leaderBoardRepository.save(leaderBoard);
+        }
     }
+
 }
