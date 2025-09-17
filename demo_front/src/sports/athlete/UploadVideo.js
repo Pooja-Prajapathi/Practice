@@ -57,13 +57,13 @@ function UploadVideo({ athleteId }) {
         <>
           <p className="field-heading">Upload and preview your performance videos</p>
           <motion.label className="upload-section" whileHover={{ scale: 1.02 }}>
-            <UploadIcon className="mx-auto w-12 h-12 text-red-500" />
+            <UploadIcon className="upload-icon" />
             <span>Click to choose a video file</span>
             <input
               type="file"
               accept="video/*"
               onChange={handleFileChange}
-              className="hidden"
+              className="hidden file-upload"
             />
           </motion.label>
         </>
@@ -77,7 +77,7 @@ function UploadVideo({ athleteId }) {
           <div className="video-container">
             <video src={previewURL} controls className="preview-video" />
           </div>
-          <div className="flex justify-center gap-4 mt-4">
+          <div className="review-button">
             <button className="upload-button" onClick={handleUpload}>
               Upload Video
             </button>

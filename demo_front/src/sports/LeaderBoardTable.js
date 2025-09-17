@@ -14,7 +14,7 @@ function LeaderBoardTable() {
       .then((data) => setLeaderboards(data))
       .catch((err) => {
         console.error(err);
-        setMessage("🚨 Failed to load leaderboard.");
+        setMessage("Failed to load leaderboard.");
       });
   }, []);
 

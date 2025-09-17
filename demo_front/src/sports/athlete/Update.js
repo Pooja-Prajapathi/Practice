@@ -29,7 +29,6 @@ function Update({ athleteId }) {
     }
   }, [athleteId]);
 
-  // Handle input change
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setAthleteData((prev) => ({
@@ -38,7 +37,6 @@ function Update({ athleteId }) {
     }));
   };
 
-  // Save athlete profile (update only)
   const handleSave = async () => {
     if (!athleteId) {
       setMessage("🚨 No athleteId provided.");
@@ -57,7 +55,7 @@ function Update({ athleteId }) {
 
       if (response.ok) {
         await response.json();
-        setMessage("✅ Athlete profile updated successfully!");
+        setMessage("Athlete profile updated successfully!");
         setAthleteData({
           sportInterest: "",
           heightCm: 0,
@@ -67,11 +65,11 @@ function Update({ athleteId }) {
         });
       } else {
         const errorText = await response.text();
-        setMessage(`❌ Failed: ${errorText}`);
+        setMessage(`Failed: ${errorText}`);
       }
     } catch (err) {
       console.error(err);
-      setMessage("🚨 Server error while updating athlete profile.");
+      setMessage("Server error while updating athlete profile.");
     }
   };
 
@@ -125,10 +123,12 @@ function Update({ athleteId }) {
           <span className="consent-custom" aria-hidden="true"></span>
           Parental Consent
         </label>
+        <div className="review-button">
 
         <button type="button" className="upload-button" onClick={handleSave}>
           Update Athlete Info
         </button>
+        </div>
       </form>
 
       {message && <div className="message mt-4">{message}</div>}

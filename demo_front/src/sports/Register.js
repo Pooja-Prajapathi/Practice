@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
+import bgImage from "./register.png";
+import "./Home.css";
 
 function Register() {
   const location = useLocation();
@@ -17,7 +19,7 @@ function Register() {
     gender: "",
     location: "",
     contact: "",
-    role: "athlete"
+    role: "athlete",
   });
   const [message, setMessage] = useState("");
 
@@ -38,7 +40,6 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const res = await fetch(backendUrl, {
         method: "POST",
@@ -50,7 +51,9 @@ function Register() {
         setMessage(`Successfully registered as ${formType} in Sportzy.`);
       } else {
         const errorData = await res.json();
-        setMessage(`Registration failed: ${errorData.message || "Unknown error"}`);
+        setMessage(
+          `Registration failed: ${errorData.message || "Unknown error"}`
+        );
       }
     } catch (err) {
       console.error(err);
@@ -59,104 +62,115 @@ function Register() {
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "500px" }}>
-      <h1 className="text-danger text-center">Welcome to Sportzy</h1>
-      <h3 className="text-center text-secondary mb-4">
-        Register as {formType.charAt(0).toUpperCase() + formType.slice(1)}
-      </h3>
+    <div
+      className="register-bg"
+      style={{ backgroundImage: `url(${bgImage})` }}
+    >
+      <div className="container p-4 register-container">
+        <h1 className="register-title">Welcome to Sportzy</h1>
+        <h3 className="register-subtitle">
+          Register as {formType.charAt(0).toUpperCase() + formType.slice(1)}
+        </h3>
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Full Name:</label>
-          <input
-            className="form-control"
-            id="fullname"
-            value={formData.fullname}
-            onChange={handleChange}
-            required
-          />
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="field-label">Full Name:</label>
+            <input
+              className="form-control"
+              id="fullname"
+              value={formData.fullname}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="field-label">Date of Birth:</label>
+            <input
+              type="date"
+              className="form-control"
+              id="dob"
+              value={formData.dob}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="field-label">Gender:</label>
+            <select
+              className="form-control"
+              id="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              required
+            >
+              <option value="">-- Select Gender --</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+              <option value="Prefer Not To Say">Prefer Not To Say</option>
+            </select>
+          </div>
+
+          <div className="mb-3">
+            <label className="field-label">Location:</label>
+            <input
+              className="form-control"
+              id="location"
+              value={formData.location}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="field-label">Contact:</label>
+            <input
+              className="form-control"
+              id="contact"
+              value={formData.contact}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="field-label">Email:</label>
+            <input
+              type="email"
+              className="form-control"
+              id="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="field-label">Password:</label>
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-danger w-100">
+            Register
+          </button>
+        </form>
+
+        {message && <div className="mt-3 text-center fw-bold">{message}</div>}
+
+        <div className="mt-4 text-center">
+          <Link to="/" className="register-back">
+            ⬅ Back to Home
+          </Link>
         </div>
-
-        <div className="mb-3">
-          <label className="form-label">Date of Birth:</label>
-          <input
-            type="date"
-            className="form-control"
-            id="dob"
-            value={formData.dob}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Gender:</label>
-          <input
-            className="form-control"
-            id="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Location:</label>
-          <input
-            className="form-control"
-            id="location"
-            value={formData.location}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Contact:</label>
-          <input
-            className="form-control"
-            id="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Email:</label>
-          <input
-            type="email"
-            className="form-control"
-            id="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Password:</label>
-          <input
-            type="password"
-            className="form-control"
-            id="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <button type="submit" className="btn btn-red w-100">
-          Register
-        </button>
-      </form>
-
-      {message && <div className="mt-3 text-center fw-bold">{message}</div>}
-
-      <div className="mt-4 text-center">
-        <Link to="/" className="text-primary">
-          ⬅ Back to Home
-        </Link>
       </div>
     </div>
   );

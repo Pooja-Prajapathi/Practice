@@ -10,7 +10,6 @@ function Update({ coachId }) {
   });
   const [message, setMessage] = useState("");
 
-  // Load coach info by coachId
   useEffect(() => {
     if (coachId) {
       fetch(`http://localhost:8080/api/coaches/${coachId}`)
@@ -25,20 +24,18 @@ function Update({ coachId }) {
               bio: coach.bio || "",
             });
           } else {
-            setMessage("🚨 Coach profile not found. Please create one.");
+            setMessage("Coach profile not found. Please create one.");
           }
         })
-        .catch(() => setMessage("🚨 Error fetching coach profile."));
+        .catch(() => setMessage("Error fetching coach profile."));
     }
   }, [coachId]);
 
-  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCoachData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Save coach profile
   const handleSave = async () => {
     if (!coachId) {
       setMessage("🚨 No coachId provided.");
@@ -57,20 +54,20 @@ function Update({ coachId }) {
 
       if (response.ok) {
         await response.json();
-        setMessage("✅ Coach profile updated successfully!");
+        setMessage("Coach profile updated successfully!");
       } else {
         const errorText = await response.text();
-        setMessage(`❌ Failed: ${errorText}`);
+        setMessage(`Failed: ${errorText}`);
       }
     } catch (err) {
       console.error(err);
-      setMessage("🚨 Server error while saving coach profile.");
+      setMessage("Server error while saving coach profile.");
     }
   };
 
   return (
     <div className="scroll-section">
-      <h4>Update Coach Information</h4>
+      <p className="field-heading">Update Coach Information</p>
       <form className="update-form">
         <label className="field-label">Specialization</label>
         <input
@@ -115,10 +112,11 @@ function Update({ coachId }) {
           value={coachData.bio}
           onChange={handleChange}
         />
-
+        <div className="review-button">
         <button type="button" className="upload-button" onClick={handleSave}>
           Save Coach Info
         </button>
+        </div>
       </form>
 
       {message && <div className="message mt-4">{message}</div>}

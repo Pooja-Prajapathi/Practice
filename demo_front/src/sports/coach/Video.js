@@ -17,7 +17,7 @@ function Video({ coachId }) {
       .then(data => setVideos(data))
       .catch(err => {
         console.error(err);
-        setMessage("🚨 Failed to fetch videos.");
+        setMessage("Failed to fetch videos.");
       });
   }, [coachId]);
 
@@ -26,7 +26,6 @@ function Video({ coachId }) {
 
   return (
     <div className="scroll-section">
-      {/* 🔹 Page Heading */}
       <p className="field-heading">Video Review</p>
 
       <div className="videos-grid" style={{ display: "grid", gap: "20px" }}>
@@ -41,7 +40,6 @@ function Video({ coachId }) {
               background: "#f9f9f9",
             }}
           >
-            {/* 🔹 Show video name */}
             <p className="field-heading ">
                           {video.fileName || `Video ${index + 1}`}
                         </p>
@@ -52,13 +50,12 @@ function Video({ coachId }) {
                           </span>
                         </p>
 
-            {/* 🔹 Video Player */}
+            <div className="file-upload">
             {typeof video === "string" ? (
               <video
                 src={video}
                 controls
                 className="preview-video"
-                style={{ width: "100%", borderRadius: "6px" }}
               />
             ) : (
               <>
@@ -66,10 +63,10 @@ function Video({ coachId }) {
                   src={video.url}
                   controls
                   className="preview-video"
-                  style={{ width: "100%", borderRadius: "6px" }}
                 />
               </>
             )}
+            </div>
           </div>
         ))}
       </div>

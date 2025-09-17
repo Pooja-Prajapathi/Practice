@@ -8,7 +8,7 @@ function Report() {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
-      setMessage("🚨 No user found in local storage.");
+      setMessage("No user found in local storage.");
       return;
     }
 
@@ -18,7 +18,7 @@ function Report() {
       setRole(user.role);
     } catch (err) {
       console.error("Failed to parse user from localStorage:", err);
-      setMessage("🚨 Invalid user data.");
+      setMessage("Invalid user data.");
       return;
     }
 
@@ -41,7 +41,7 @@ function Report() {
       })
       .catch((err) => {
         console.error(err);
-        setMessage("🚨 Failed to fetch results.");
+        setMessage("Failed to fetch results.");
       });
   }, []);
 
@@ -87,7 +87,7 @@ function Report() {
       })
       .catch((err) => {
         console.error(err);
-        alert("🚨 Failed to save changes");
+        alert("Failed to save changes");
       });
   };
 
@@ -112,7 +112,7 @@ function Report() {
                 type="text"
                 value={result.comments}
                 onChange={(e) => handleChange(result.id, "comments", e.target.value)}
-                className="border rounded px-2 py-1 w-full"
+                className="border rounded px-2 py-1 w-64"
               />
             ) : (
               result.comments || "N/A"

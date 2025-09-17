@@ -7,6 +7,7 @@ import Update from "./Update";
 import UploadVideo from "./UploadVideo";
 import Report from "../Report";
 import LeaderBoardTable from "../LeaderBoardTable";
+import bgImage from "../home.jpeg";
 
 function Athlete() {
   const navigate = useNavigate();
@@ -16,7 +17,6 @@ function Athlete() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Load user and athlete info
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -43,9 +43,17 @@ function Athlete() {
     navigate("/");
   };
 
-  return (
-    <div className="athlete-container">
-      {/* Header */}
+return (
+    <div
+          className="athlete-container"
+          style={{
+            backgroundImage: `url(${bgImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            minHeight: "100vh",
+          }}
+        >
       <div className="athlete-header">
         <h1>Athlete Dashboard</h1>
         {user && (
@@ -73,7 +81,7 @@ function Athlete() {
                   Update Profile
                 </div>
                 <div className="dropdown-item" onClick={handleLogout}>
-                   Logout
+                  Logout
                 </div>
               </div>
             )}
@@ -81,7 +89,6 @@ function Athlete() {
         )}
       </div>
 
-      {/* Menu Tabs */}
       <div className="menu-tabs">
         {tabs.map((tab) => (
           <div
@@ -94,15 +101,16 @@ function Athlete() {
         ))}
       </div>
 
-      {/* Content Box */}
       <motion.div
         className="content-box"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         {activeTab === "Upload" && <UploadVideo athleteId={athleteId} />}
-        {activeTab === "Update Athlete Info" && <Update athleteId={athleteId} />}
-        {activeTab === "Report" && <Report/>}
+        {activeTab === "Update Athlete Info" && (
+          <Update athleteId={athleteId} />
+        )}
+        {activeTab === "Report" && <Report />}
         {activeTab === "Leaderboard" && <LeaderBoardTable />}
         {message && <div className="message mt-4">{message}</div>}
       </motion.div>

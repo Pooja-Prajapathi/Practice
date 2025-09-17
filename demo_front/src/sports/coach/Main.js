@@ -3,10 +3,11 @@ import { User } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "../../sports/Home.css";
-import Update from "./Update"; // Update Coach Info component
-import Video from "./Video";   // Video list component
+import Update from "./Update";
+import Video from "./Video";
 import Report from "../Report";
 import LeaderBoardTable from "../LeaderBoardTable";
+import bgImage from "../home.jpeg";
 
 function Coach() {
   const navigate = useNavigate();
@@ -18,7 +19,6 @@ function Coach() {
   const [activeTab, setActiveTab] = useState("Update Coach Info");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  // Load user and coach ID for uploads
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -31,14 +31,13 @@ function Coach() {
             const coach = await res.json();
             setCoachId(coach.id);
           } else {
-            setMessage("🚨 Coach profile not found. Please create one.");
+            setMessage("Coach profile not found. Please create one.");
           }
         })
-        .catch(() => setMessage("🚨 Error fetching coach profile."));
+        .catch(() => setMessage("Error fetching coach profile."));
     }
   }, []);
 
-  // Handle file selection
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -56,8 +55,16 @@ function Coach() {
   };
 
   return (
-    <div className="athlete-container">
-      {/* Header */}
+    <div
+       className="athlete-container"
+       style={{
+           backgroundImage: `url(${bgImage})`,
+           backgroundSize: "cover",
+           backgroundPosition: "center",
+           backgroundRepeat: "no-repeat",
+           minHeight: "100vh",
+       }}
+    >
       <div className="athlete-header">
         <h1>Coach Dashboard</h1>
         {user && (
@@ -90,7 +97,6 @@ function Coach() {
         )}
       </div>
 
-      {/* Tabs */}
       <div className="menu-tabs">
         {tabs.map((tab) => (
           <div
@@ -103,19 +109,13 @@ function Coach() {
         ))}
       </div>
 
-      {/* Content Box */}
       <motion.div
         className="content-box"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        {/* Update Coach Info */}
         {activeTab === "Update Coach Info" && <Update coachId={coachId} />}
-
-        {/* Upload Tab */}
         {activeTab === "Upload" && <Video coachId={coachId}/>}
-
-        {/* Other Tabs */}
         {activeTab === "Reports" && <Report/>}
         {activeTab === "Leaderboard" && <LeaderBoardTable />}
       </motion.div>
